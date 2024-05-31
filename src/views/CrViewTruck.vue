@@ -7,12 +7,12 @@ const { withAsync, withMessage } = helpers
 import { useRoute, useRouter } from 'vue-router'
 import { useTruckStatuses } from '@/composables/useTruckStatuses'
 import { useTrucksAPI } from '@/composables/useTrucksAPI'
-import CrForm from '@/components/common/CrForm.vue';
+import CrForm from '@/components/common/CrForm.vue'
 import { TruckRoutes } from '@/enums/routes.enum'
 
-const route = useRoute();
-const router = useRouter();
-const { fetchTruck, fetchTrucks, createTruck, updateTruck } = useTrucksAPI();
+const route = useRoute()
+const router = useRouter()
+const { fetchTruck, fetchTrucks, createTruck, updateTruck } = useTrucksAPI()
 
 interface Truck {
   id?: string
@@ -22,23 +22,23 @@ interface Truck {
   status?: string
 }
 
-const truck = ref<Truck>();
+const truck = ref<Truck>()
 
-const state = ref<Truck>({...truck.value});
+const state = ref<Truck>({ ...truck.value })
 
 const isCreate = computed(() => route.name === TruckRoutes.TRUCK_ADD)
 const isUpdate = computed(() => route.name === TruckRoutes.TRUCK_EDIT)
 
-const allStatuses = ref();
+const allStatuses = ref()
 
 const getTruck = async () => {
   try {
-    const id = route.params.id as string;
-    truck.value = (await fetchTruck(id))?.data;
+    const id = route.params.id as string
+    truck.value = (await fetchTruck(id))?.data
     allStatuses.value = useTruckStatuses(isUpdate.value, truck.value?.status).allStatuses.value
-    state.value = { ...truck.value };
+    state.value = { ...truck.value }
   } catch (e) {
-    console.error(e);
+    console.error(e)
   }
 }
 
@@ -47,12 +47,12 @@ if (isCreate.value) {
 }
 
 if (isUpdate.value) {
-  getTruck();
+  getTruck()
 }
 
 // LABELS
 const label = computed(() => {
-  return isCreate.value ? `Add Truck` : `Edit Truck: ${truck.value?.id}`;
+  return isCreate.value ? `Add Truck` : `Edit Truck: ${truck.value?.id}`
 })
 
 const actionLabel = computed(() => {
@@ -62,40 +62,48 @@ const actionLabel = computed(() => {
 // VALIDATION
 const isUnique = async (code: string) => {
   if (code === truck.value?.code || !code) {
-    return true;
+    return true
   }
-  const response = (await fetchTrucks(1,1, { code }))?.data;
+  const response = (await fetchTrucks(1, 1, { code }))?.data
   return !response.length
 }
 
 const fields = reactive([
-    ...isUpdate.value ? [{
+  ...(isUpdate.value
+    ? [
+        {
           name: 'id',
           label: 'Id',
           rule: isUpdate.value ? { required } : {},
           type: 'InputText',
-          disabled: true,
-        }] : [],
+          disabled: true
+        }
+      ]
+    : []),
   {
     name: 'name',
     label: 'Name',
     rule: { required },
     type: 'InputText',
-    disabled: false,
+    disabled: false
   },
   {
     name: 'code',
     label: 'Code',
-    rule: { required, alphaNum, unique: withMessage('The value must be unique', withAsync(isUnique)) },
+    rule: {
+      required,
+      alphaNum,
+      unique: withMessage('The value must be unique', withAsync(isUnique))
+    },
     type: 'InputText',
-    disabled: false,
+    disabled: false
   },
   {
     name: 'description',
     label: 'Description',
     rule: {},
     type: 'Textarea',
-    disabled: false,
+    disabled: false
   },
   {
     name: 'status',
@@ -103,36 +111,39 @@ const fields = reactive([
     rule: { required },
     type: 'Dropdown',
     options: allStatuses,
-    disabled: false,
+    disabled: false
   }
 ])
 
-
 // ACTIONS
 const onMainAction = async () => {
-  const { id, name, code, description, status } = state.value;
+  const { id, name, code, description, status } = state.value
   if (isCreate.value) {
-    truck.value = (await createTruck(name, code, description, status))?.data;
+    truck.value = (await createTruck(name, code, description, status))?.data
   }
   if (isUpdate.value) {
-    truck.value = (await updateTruck(id, name, code, description, status))?.data;
+    truck.value = (await updateTruck(id, name, code, description, status))?.data
   }
-  goBack();
+  goBack()
 }
 
 const goBack = () => {
   router.push({ name: TruckRoutes.LIST_OF_TRUCKS })
 }
-
 </script>
 
 <template>
-  <CrForm :fields="fields" :state="state" :label="label" :actionLabel="actionLabel" @action="onMainAction">
+  <CrForm
+    :fields="fields"
+    :state="state"
+    :label="label"
+    :actionLabel="actionLabel"
+    @action="onMainAction"
+  >
     <template #beforeTitle>
       <Button icon="pi pi-angle-left" text rounded aria-label="Go Back" @click="goBack()" />
     </template>
   </CrForm>
 </template>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

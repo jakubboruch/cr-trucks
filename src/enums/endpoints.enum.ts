@@ -1,3 +1,3 @@
 export enum TrucksEndpoints {
-  TRUCKS = '/trucks',
+  TRUCKS = '/trucks'
 }

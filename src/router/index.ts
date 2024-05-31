@@ -20,7 +20,7 @@ const router = createRouter({
       path: '/truck/add',
       name: TruckRoutes.TRUCK_ADD,
       component: Truck
-    },
+    }
   ]
 })
 
