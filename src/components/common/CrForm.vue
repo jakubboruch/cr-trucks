@@ -26,7 +26,7 @@ const props = withDefaults(
 const rules = computed(() => {
   return props.fields.reduce((acc: Record<string, ValidationRuleCollection>, curr: FormField) => {
     if (curr.name === undefined || curr.rule === undefined) {
-      return acc;
+      return acc
     }
     acc[curr.name] = curr.rule
     return acc
