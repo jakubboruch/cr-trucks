@@ -6,7 +6,8 @@ import Dropdown from 'primevue/dropdown'
 import { defineProps, defineEmits, withDefaults, computed, watch } from 'vue'
 import type { Ref } from 'vue'
 import useVuelidate from '@vuelidate/core'
-import type { Validation } from '@vuelidate/core'
+import type { Validation, ValidationRuleCollection } from '@vuelidate/core'
+import type { FormField } from '@/interfaces/form'
 
 const props = withDefaults(
   defineProps<{
@@ -23,7 +24,10 @@ const props = withDefaults(
 )
 
 const rules = computed(() => {
-  return props.fields.reduce((acc: Record<string, string>, curr: any) => {
+  return props.fields.reduce((acc: Record<string, ValidationRuleCollection>, curr: FormField) => {
+    if (curr.name === undefined || curr.rule === undefined) {
+      return acc;
+    }
     acc[curr.name] = curr.rule
     return acc
   }, {})

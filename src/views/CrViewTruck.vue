@@ -9,18 +9,11 @@ import { useTruckStatuses } from '@/composables/useTruckStatuses'
 import { useTrucksAPI } from '@/composables/useTrucksAPI'
 import CrForm from '@/components/common/CrForm.vue'
 import { TruckRoutes } from '@/enums/routes.enum'
+import type { Truck } from '@/interfaces/backend'
 
 const route = useRoute()
 const router = useRouter()
 const { fetchTruck, fetchTrucks, createTruck, updateTruck } = useTrucksAPI()
-
-interface Truck {
-  id?: string
-  name?: string
-  description?: string
-  code?: string
-  status?: string
-}
 
 const truck = ref<Truck>()
 
