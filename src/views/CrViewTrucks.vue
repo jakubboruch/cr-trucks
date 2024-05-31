@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router'
 import { usePagination } from '@/composables/usePagination'
 import { useTrucksAPI } from '@/composables/useTrucksAPI'
 import { useSorting } from '@/composables/useSorting'
+import { useLoadingStore } from '@/stores/loading.store'
 import { TruckRoutes } from '@/enums/routes.enum'
 import type { Params } from '@/interfaces/sorting'
 
@@ -19,6 +20,7 @@ const { itemsPerPage } = usePagination()
 const { fetchTrucks, deleteTruck } = useTrucksAPI()
 const limit = ref(itemsPerPage.value)
 const totalItems = ref(0)
+const loadingStore = useLoadingStore();
 const params: Params = reactive({
   sort: undefined,
   order: undefined
@@ -103,6 +105,7 @@ getTrucks()
     </header>
     <DataTable
       :value="trucks"
+      :loading="loadingStore.isLoading"
       scrollable
       scrollHeight="500px"
       lazy
@@ -131,7 +134,8 @@ getTrucks()
           </template>
         </Column>
       </template>
-
+      <template #empty> No data found. </template>
+      <template #loading> Loading data. Please wait. </template>
       <template #footer>
         <CrPagination
           :page="pageNumber"
