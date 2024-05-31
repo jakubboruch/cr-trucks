@@ -32,7 +32,7 @@ const onItemsPerPageChange = (newValue: number) => {
   emit('update:page', 1)
 }
 
-const onCurrentPageValueInputChange = (event: KeyboardEvent) => {
+const onCurrentPageValueInputChange = (event: KeyboardEvent | FocusEvent) => {
   const target = event.target as HTMLInputElement
   const nextPage = Number(target.value)
   if (nextPage < 1 || nextPage > numberOfPages.value) {

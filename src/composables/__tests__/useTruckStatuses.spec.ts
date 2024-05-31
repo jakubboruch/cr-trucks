@@ -1,15 +1,21 @@
 import { expect, test } from 'vitest'
 import { useTruckStatuses } from '../useTruckStatuses'
+import type { DropdownType } from '@/interfaces/dropdowns'
+import type { Ref } from 'vue'
 
-function outOfServiceIsEnabled(allStatuses) {
-  const outOfService = allStatuses.value.find((status) => status.value === 'OUT_OF_SERVICE')
-  expect(outOfService.disabled).toBe(false)
+function outOfServiceIsEnabled(allStatuses: Ref<DropdownType[]>) {
+  const outOfService = allStatuses.value.find(
+    (status: DropdownType) => status.value === 'OUT_OF_SERVICE'
+  )
+  expect(outOfService?.disabled).toBe(false)
 }
 
-function nextStatusIsEnabled(allStatuses, nextStatusName: string) {
-  const notDisabledStatuses = allStatuses.value.filter((status) => !status.disabled)
+function nextStatusIsEnabled(allStatuses: Ref<DropdownType[]>, nextStatusName: string) {
+  const notDisabledStatuses = allStatuses.value.filter((status: DropdownType) => !status.disabled)
   expect(notDisabledStatuses.length).toBe(3)
-  const nextStatusIsEnabled = notDisabledStatuses.some((status) => status.value === nextStatusName)
+  const nextStatusIsEnabled = notDisabledStatuses.some(
+    (status: DropdownType) => status.value === nextStatusName
+  )
   expect(nextStatusIsEnabled).toBe(true)
 }
 
