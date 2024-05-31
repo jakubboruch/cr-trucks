@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import DataTable from 'primevue/datatable'
+import type { DataTableSortEvent } from 'primevue/datatable'
 import Column from 'primevue/column'
 import Button from 'primevue/button'
 import CrPagination from '@/components/common/CrPagination.vue'
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePagination } from '@/composables/usePagination'
 import { useTrucksAPI } from '@/composables/useTrucksAPI'
+import { useSorting } from '@/composables/useSorting'
 import { TruckRoutes } from '@/enums/routes.enum'
+import type { Params } from '@/interfaces/sorting'
 
 let trucks = ref(undefined)
 const router = useRouter()
@@ -16,11 +19,15 @@ const { itemsPerPage } = usePagination()
 const { fetchTrucks, deleteTruck } = useTrucksAPI()
 const limit = ref(itemsPerPage.value)
 const totalItems = ref(0)
+const params: Params = reactive({
+  sort: undefined,
+  order: undefined
+})
 
 // API CALLS
 const getTrucks = async (page = pageNumber.value) => {
   try {
-    const response = await fetchTrucks(page, limit.value)
+    const response = await fetchTrucks(page, limit.value, params)
     totalItems.value = Number(response?.headers['x-total-count'])
     trucks.value = response?.data
     pageNumber.value = page
@@ -49,11 +56,11 @@ const onClickCreate = () => {
 
 // TABLE CONFIG
 const columns = [
-  { field: 'id', header: 'ID' },
-  { field: 'code', header: 'Code' },
-  { field: 'name', header: 'Name' },
+  { field: 'id', header: 'ID', sortable: true },
+  { field: 'code', header: 'Code', sortable: true },
+  { field: 'name', header: 'Name', sortable: true },
   { field: 'description', header: 'Description' },
-  { field: 'status', header: 'Status' },
+  { field: 'status', header: 'Status', sortable: true },
   {
     actions: [
       { icon: 'pi pi-pencil', action: goToDetails },
@@ -71,6 +78,15 @@ const onItemsPerPageChange = (newLimit: number) => {
   limit.value = newLimit
 }
 
+const onSortColumn = (event: DataTableSortEvent) => {
+  const { sortField, sortOrder } = event
+  const { getSortOrder } = useSorting()
+  const order = getSortOrder(sortOrder)
+  params.sort = sortField
+  params.order = order
+  getTrucks()
+}
+
 getTrucks()
 </script>
 
@@ -85,9 +101,22 @@ getTrucks()
         <Button rounded @click="onClickCreate">Add Truck</Button>
       </div>
     </header>
-    <DataTable :value="trucks" scrollable scrollHeight="500px" tableStyle="min-width: 50rem">
+    <DataTable
+      :value="trucks"
+      scrollable
+      scrollHeight="500px"
+      lazy
+      removable-sort
+      @sort="onSortColumn"
+      tableStyle="min-width: 50rem"
+    >
       <template v-for="column in columns" :key="column.field">
-        <Column v-if="column.field" :field="column.field" :header="column.header"></Column>
+        <Column
+          v-if="column.field"
+          :field="column.field"
+          :header="column.header"
+          :sortable="column.sortable"
+        ></Column>
         <Column v-if="column.actions" :header="column.header" style="width: 150px">
           <template #body="{ data }">
             <Button
