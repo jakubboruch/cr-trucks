@@ -38,7 +38,6 @@ let v$: Ref<Validation> = useVuelidate(rules, props.state)
 const emit = defineEmits(['action'])
 
 const onAction = async () => {
-  console.log(v$)
   const isValid = await v$.value.$validate()
   if (!isValid) {
     return
