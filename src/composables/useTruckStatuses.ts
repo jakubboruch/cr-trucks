@@ -34,13 +34,13 @@ export function useTruckStatuses(isUpdate: boolean, truckStatus?: string) {
     return isNext
   }
 
-  const isStatusDisabled = (status: string) => {
+  const isStatusDisabled = (status: string) => { // conditions to disable status in the dropdown
     return (
-      isUpdate &&
-      status !== truckStatus &&
-      !inactiveStatuses.includes(truckStatus as INACTIVE_STATUSES) &&
-      !inactiveStatuses.includes(status as INACTIVE_STATUSES) &&
-      !isNextStatus(activeStatuses, truckStatus, status)
+      isUpdate && // condition only applies for edit action
+      status !== truckStatus && // different status from the current one
+      !inactiveStatuses.includes(truckStatus as INACTIVE_STATUSES) && // each status can be set if the current status of the Truck is "Out of service"
+      !inactiveStatuses.includes(status as INACTIVE_STATUSES) && // "Out Of Service" status can be set regardless of the current status of the Truck
+      !isNextStatus(activeStatuses, truckStatus, status) // The remaining statuses can only be changed in the following order: Loading -> To Job -> At Job -> Returning, when Truck has "Returning" status it can start "Loading" again.
     )
   }
 
